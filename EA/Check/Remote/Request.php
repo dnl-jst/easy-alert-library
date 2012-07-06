@@ -1,0 +1,45 @@
+<?php
+
+class EA_Check_Remote_Request extends EA_Check_Abstract_Request
+{
+	protected $sRemoteHost = '';
+	protected $iRemotePort = 0;
+	protected $oRequest = null;
+
+	public function doCheck()
+	{
+		$oSocketClient = new EA_Socket_Client($this->sRemoteHost, $this->iRemotePort);
+		$sResponse = $oSocketClient->sendMessageAndGetResponse(serialize($this->oRequest));
+		return unserialize($sResponse);
+	}
+
+	public function ready4Takeoff()
+	{
+		if (empty($this->sRemoteHost) || (int) $this->iRemotePort === 0 || $this->oRequest === null)
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	public function setRemoteHost($sRemoteHost)
+	{
+		$this->sRemoteHost = (string) $sRemoteHost;
+	}
+
+	public function setRemotePort($iRemotePort)
+	{
+		$this->iRemotePort = (int) $iRemotePort;
+	}
+
+	public function setRequest($oRequest)
+	{
+		if (!$oRequest instanceof EA_Request)
+		{
+			throw new EA_Exception();
+		}
+
+		$this->oRequest = $oRequest;
+	}
+}

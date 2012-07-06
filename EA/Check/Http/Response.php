@@ -1,6 +1,6 @@
 <?php
 
-class EA_Check_Response_Http extends EA_Check_Response_Abstract
+class EA_Check_Http_Response extends EA_Check_Abstract_Response
 {
 	protected $iBytes;
 	protected $fResponseTime;

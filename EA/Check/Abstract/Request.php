@@ -1,6 +1,6 @@
 <?php
 
-abstract class EA_Check_Abstract
+abstract class EA_Check_Abstract_Request
 {
 	protected $oLogger;
 

@@ -1,6 +1,6 @@
 <?php
 
-abstract class EA_Check_Response_Abstract
+abstract class EA_Check_Abstract_Response
 {
 	const STATE_OK = 'OK';
 	const STATE_WARNING = 'WARNING';

@@ -1,6 +1,6 @@
 <?php
 
-class EA_Check_Http extends EA_Check_Abstract
+class EA_Check_Http_Request extends EA_Check_Abstract_Request
 {
 	protected $sHost = '';
 	protected $iPort = 0;

@@ -4,7 +4,7 @@ class EA_Request
 {
 	protected $oCheck;
 
-	public function setCheck(EA_Check_Abstract $oCheck)
+	public function setCheck(EA_Check_Abstract_Request $oCheck)
 	{
 		$this->oCheck = $oCheck;
 	}
