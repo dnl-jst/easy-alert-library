@@ -1,7 +1,8 @@
 <?php
 
-require_once('EA/AutoLoader/PrefixNotAllowedException.php');
-require_once('EA/AutoLoader/ClassNotFoundException.php');
+require_once('Exception.php');
+require_once('AutoLoader/PrefixNotAllowedException.php');
+require_once('AutoLoader/ClassNotFoundException.php');
 
 class EA_AutoLoader
 {
@@ -24,30 +25,25 @@ class EA_AutoLoader
 
 	public static function load($sClassName)
 	{
-		self::classAllowed($sClassName);
+		if (self::classAllowed($sClassName) === false)
+		{
+			return;
+		}
 
 		$sClassPath = str_replace('_', '/', $sClassName) . '.php';
 
-		if (!is_file($sClassPath))
-		{
-			throw new EA_AutoLoader_ClassNotFoundException();
-		}
-
 		require_once($sClassPath);
-	
-		if (!class_exists($sClassName))
-		{
-			throw new EA_AutoLoader_ClassNotFoundException();
-		}
 	}
 
-	protected static classAllowed($sClassName)
+	protected static function classAllowed($sClassName)
 	{
 		$sClassPrefix = substr($sClassName, 0, strpos($sClassName, '_'));
 
-		if (!in_array($sClassPrefixes, self::$aPrefixes))
+		if (!in_array($sClassPrefix, self::$aPrefixes))
 		{
-			throw new EA_AutoLoader_PrefixNotAllowedException();
+			return false;
 		}
+
+		return true;
 	}
 }
