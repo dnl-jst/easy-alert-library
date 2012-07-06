@@ -17,11 +17,11 @@ class EA_Check_Http_Request extends EA_Check_Abstract_Request
 		$sResponse = @file_get_contents($sUrl);
 		$iDuration = microtime(true) - $iTimeBegin;
 
-		$oResponse = new EA_Check_Response_Http();
+		$oResponse = new EA_Check_Http_Response();
 
 		if ($sResponse === false)
 		{
-			$oResponse->setState(EA_Check_Response_Abstract::STATE_CRITICAL);
+			$oResponse->setState(EA_Check_Abstract_Response::STATE_CRITICAL);
 			$oResponse->setBytes(0);
 			$oResponse->setResponseTime(0);
 
@@ -29,11 +29,11 @@ class EA_Check_Http_Request extends EA_Check_Abstract_Request
 		}
 		elseif ($iDuration > $this->fResponseTimeWarningThreshold)
 		{
-			$oResponse->setState(EA_Check_Response_Abstract::STATE_WARNING);
+			$oResponse->setState(EA_Check_Abstract_Response::STATE_WARNING);
 		}
 		else
 		{
-			$oResponse->setState(EA_Check_Response_Abstract::STATE_OK);
+			$oResponse->setState(EA_Check_Abstract_Response::STATE_OK);
 		}
 
 		$oResponse->setBytes(strlen($sResponse));
