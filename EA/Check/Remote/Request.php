@@ -8,8 +8,16 @@ class EA_Check_Remote_Request extends EA_Check_Abstract_Request
 
 	public function doCheck()
 	{
-		$oSocketClient = new EA_Socket_Client($this->sRemoteHost, $this->iRemotePort);
-		$sResponse = $oSocketClient->sendMessageAndGetResponse(serialize($this->oRequest));
+		try
+		{
+			$oSocketClient = new EA_Socket_Client($this->sRemoteHost, $this->iRemotePort);
+			$sResponse = $oSocketClient->sendMessageAndGetResponse(serialize($this->oRequest));
+		}
+		catch (EA_Socket_Client_UnableToConnectException $e)
+		{
+			throw new EA_Check_Exception();
+		}
+
 		return unserialize($sResponse);
 	}
 

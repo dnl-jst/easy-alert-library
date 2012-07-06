@@ -52,7 +52,17 @@ class EA_RequestHandler implements EA_Socket_Daemon_ListenerInterface
 			{
 				$oCheck->setLogger($logger);
 				$logger->debug('doing check ' . get_class($oCheck));
-				$oResponse = $oCheck->doCheck();
+
+				try
+				{
+					$oResponse = $oCheck->doCheck();
+				}
+				catch (EA_Check_Exception $e)
+				{
+					$oResponse = new EA_Response();
+					$oResponse->setErrorCode(500);
+					$oResponse->setErrorMessage('internal server error');
+				}
 			}
 		}
 
