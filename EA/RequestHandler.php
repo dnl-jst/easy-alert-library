@@ -2,48 +2,67 @@
 
 class EA_RequestHandler implements EA_Socket_Daemon_ListenerInterface
 {
-	public function handleRequest(EA_Socket_Daemon_Request $oRequest)
+	public function handleRequest(EA_Socket_Daemon_Request $oDaemonRequest)
 	{
 		$logger = EA_Logger::getInstance();
 
-		if (!$oRequest instanceof EA_Socket_Daemon_Request)
+		if (!$oDaemonRequest instanceof EA_Socket_Daemon_Request)
 		{
 			$logger->info('request not instance of EA_Socket_Daemon_Request');
 			return;
 		}
 
-		$sCommand = $oRequest->getCommand();
+		$sRequest = $oDaemonRequest->getCommand();
 
-		if (!$oCommand = @unserialize($sCommand))
+		if (!$oRequest = @unserialize($sRequest))
 		{
 			$logger->info('command not unserializable');
 			return;
 		}
 
-		if (!$oCommand instanceof EA_Request)
+		if (!$oRequest instanceof EA_Request)
 		{
 			$logger->info('command not instance of EA_Request');
 			return;
 		}
 
-		$oCheck = $oCommand->getCheck();
+		$oAuth = $oRequest->getAuth();
 
-		if (!$oCheck->ready4Takeoff())
+		if ($oAuth === null || !$oAuth instanceof EA_Auth || $oAuth->isAuthenticated() === false)
 		{
-			$logger->info('check not ready 4 takeoff');
-			return;
+			$logger->error('authentication failed');
+
+			$oResponse = new EA_Response();
+			$oResponse->setErrorCode(403);
+			$oResponse->setErrorMessage('authentication failed');
+		}
+		else
+		{
+			$oCheck = $oRequest->getCheck();
+
+			if (!$oCheck->ready4Takeoff())
+			{
+				$logger->info('check not ready 4 takeoff');
+
+				$oResponse = new EA_Response();
+				$oResponse->setErrorCode(404);
+				$oResponse->setErrorMessage('invalid arguments');
+			}
+			else
+			{
+				$oCheck->setLogger($logger);
+				$logger->debug('doing check ' . get_class($oCheck));
+				$oResponse = $oCheck->doCheck();
+			}
 		}
 
-		$oCheck->setLogger($logger);
-
-		$logger->debug('doing check ' . get_class($oCheck));
-
-		$oResponse = $oCheck->doCheck();
-
-		if (!$oResponse instanceof EA_Check_Abstract_Response)
+		if (!$oResponse instanceof EA_Check_Abstract_Response && !$oResponse instanceof EA_Response)
 		{
-			$logger->error('response not instance of EA_Check_Response_Abstract');
-			return;
+			$logger->error('response is neither instance of EA_Check_Response_Abstract nor EA_Response');
+
+			$oResponse = new EA_Response();
+			$oResponse->setErrorCode(500);
+			$oResponse->setErrorMessage('internal server error');
 		}
 
 		return serialize($oResponse);
