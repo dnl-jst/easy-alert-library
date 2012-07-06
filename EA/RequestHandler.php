@@ -40,7 +40,7 @@ class EA_RequestHandler implements EA_Socket_Daemon_ListenerInterface
 
 		$oResponse = $oCheck->doCheck();
 
-		if (!$oResponse instanceof EA_Check_Response_Abstract)
+		if (!$oResponse instanceof EA_Check_Abstract_Response)
 		{
 			$logger->error('response not instance of EA_Check_Response_Abstract');
 			return;
