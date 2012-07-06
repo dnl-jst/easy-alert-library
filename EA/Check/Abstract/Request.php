@@ -11,4 +11,15 @@ abstract class EA_Check_Abstract_Request
 	{
 		$this->oLogger = $oLogger;
 	}
+
+	public function setConfiguration($aConfig)
+	{
+		foreach ($aConfig as $sKey => $sValue)
+		{
+			if (property_exists($this, $sKey))
+			{
+				$this->$sKey = $sValue;
+			}
+		}
+	}
 }

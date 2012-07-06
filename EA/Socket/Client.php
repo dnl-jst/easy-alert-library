@@ -22,6 +22,11 @@ class EA_Socket_Client
 		}
 	}
 
+	public function __destruct()
+	{
+		@fclose($this->rSocket);
+	}
+
 	public function sendMessageAndGetResponse($sMessage)
 	{
 		fwrite($this->rSocket, $sMessage);

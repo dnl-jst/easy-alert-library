@@ -38,6 +38,8 @@ class EA_RequestHandler implements EA_Socket_Daemon_ListenerInterface
 		}
 		else
 		{
+			$logger->debug('authentication succeeded');
+
 			$oCheck = $oRequest->getCheck();
 
 			if (!$oCheck->ready4Takeoff())

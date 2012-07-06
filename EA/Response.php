@@ -4,6 +4,7 @@ class EA_Response
 {
 	protected $iErrorCode;
 	protected $sErrorMessage;
+	protected $sState = 'CRITICAL';
 
 	public function setErrorMessage($sErrorMessage)
 	{
@@ -23,5 +24,18 @@ class EA_Response
 	public function getErrorCode()
 	{
 		return $this->iErrorCode;
+	}
+
+	public function setState($sState)
+	{
+		if ($sState == 'OK' || $sState == 'WARNING' || $sState == 'CRITICAL')
+		{
+			$this->sState = $sState;
+		}
+	}
+
+	public function getState()
+	{
+		return $this->sState;
 	}
 }
