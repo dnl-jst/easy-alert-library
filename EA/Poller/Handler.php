@@ -25,7 +25,14 @@ class EA_Poller_Handler
 
 		foreach ($aJobs as $aJob)
 		{
-			$this->oLogger->info('checking service ' . $aJob['service_name'] . ' on host ' . $aJob['host_name']);
+			if ($aJob['last_state'] !== 'OK')
+			{
+				$this->oLogger->info('retry ' . ($aJob['retries'] + 1) . ' checking service ' . $aJob['service_name'] . ' in state ***' . $aJob['last_state'] . '*** on host ' . $aJob['host_name']);
+			}
+			else
+			{
+				$this->oLogger->info('checking service ' . $aJob['service_name'] . ' on host ' . $aJob['host_name']);
+			}
 
 			$oRequest = $this->createRequest($aJob);
 			$oResponse = $this->doJob($aJob, $oRequest);
@@ -128,7 +135,16 @@ class EA_Poller_Handler
 		$oDb = EA_Db::getInstance();
 		$oDb->executeQuery($oQuery);
 
-		$this->updateHostServiceState($aJob['hs_id'], $oResponse->getState());
+		if ($oResponse->getState() !== 'OK' && $oResponse->getState() === $aJob['last_state'])
+		{
+			$aJob['retries']++;
+		}
+		else
+		{
+			$aJob['retries'] = 1;
+		}
+
+		$this->updateHostServiceState($aJob['hs_id'], $oResponse->getState(), $aJob['retries']);
 
 		$this->triggerNotifications($aJob, $oResponse);
 	}
@@ -161,11 +177,12 @@ class EA_Poller_Handler
 
 	}
 
-	protected function updateHostServiceState($iHostServiceId, $sNewState)
+	protected function updateHostServiceState($iHostServiceId, $sNewState, $iRetries)
 	{
 		$oQuery = new EA_Poller_Queries_UpdateHostService();
 		$oQuery->setHostServiceId($iHostServiceId);
 		$oQuery->setNewState($sNewState);
+		$oQuery->setRetries($iRetries);
 
 		$oDb = EA_Db::getInstance();
 		$oDb->executeQuery($oQuery);

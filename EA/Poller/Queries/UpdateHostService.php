@@ -4,6 +4,7 @@ class EA_Poller_Queries_UpdateHostService extends EA_Db_Query
 {
 	protected $iHostServiceId = 0;
 	protected $sNewState = '';
+	protected $iRetries = 0;
 
 	public function getQuery()
 	{
@@ -17,7 +18,8 @@ class EA_Poller_Queries_UpdateHostService extends EA_Db_Query
 				ea_host_services
 			SET
 				last_state = \'' . $this->escape($this->sNewState) . '\',
-				last_run = NOW()
+				last_run = NOW(),
+				retries = ' . $this->iRetries . '
 			WHERE
 				hs_id = ' . (int) $this->iHostServiceId;
 
@@ -35,5 +37,10 @@ class EA_Poller_Queries_UpdateHostService extends EA_Db_Query
 		{
 			$this->sNewState = $sState;
 		}
+	}
+
+	public function setRetries($iRetries)
+	{
+		$this->iRetries = (int) $iRetries;
 	}
 }

@@ -17,6 +17,7 @@ class EA_Poller_Queries_FetchJobs extends EA_Db_Query
 				hs.hs_id,
 				hs.configuration AS hs_configuration,
 				hs.last_state,
+				hs.retries,
 				s.name AS service_name,
 				s.key_name,
 				s.configuration AS s_configuration,

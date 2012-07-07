@@ -2,6 +2,7 @@
 
 class EA_Poller_Queries_InsertHostServiceLog extends EA_Db_Query
 {
+	protected $sTableName = 'ea_host_service_log';
 	protected $iHostServiceId = 0;
 	protected $sResponse = '';
 	protected $sType = '';
@@ -13,22 +14,13 @@ class EA_Poller_Queries_InsertHostServiceLog extends EA_Db_Query
 			throw new InvalidArgumentException();
 		}
 
-		$sQuery = '
-			INSERT INTO
-				ea_host_service_log
-				(
-					hs_id,
-					response,
-					created
-				)
-			VALUES
-				(
-					' . (int) $this->iHostServiceId . ',
-					\'' . $this->escape((string) $this->sResponse) . '\',
-					NOW()
-				)';
+		$aParams = array(
+			'hs_id'    => $this->iHostServiceId,
+			'response' => $this->sResponse,
+			'created'  => new EA_Db_Statement('NOW()')
+		);
 
-		return $sQuery;
+		return $this->getInsert($this->sTableName, $aParams);
 	}
 
 	public function setHostServiceId($iHostServiceId)
