@@ -170,7 +170,7 @@ class EA_Socket_Daemon
 				}
 			}
 
-			usleep(1000);
+			sleep(5);
 		}
 	}
 
