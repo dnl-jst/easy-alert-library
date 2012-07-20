@@ -25,17 +25,56 @@
  * SUCH DAMAGE.
  */
 
-class EA_Check_Load_Graphs
+class EA_Check_Procs_Request extends EA_Check_Abstract_Request
 {
-	protected $aGraphs = array(
-		'load1' => array(
-			'title'    => 'Load average 1min',
-			'function' => 'getLoad1'
-		),
-	);
+	protected $iProcsWarningThreshold = 50;
+	protected $iProcsCriticalThreshold = 100;
 
-	public function getAvailableGraphs()
+	public function doCheck()
 	{
-		return $this->aGraphs;
+		$this->oLogger->info('checking total processes');
+
+		$iNumProcs = exec('ps ax | wc -l');
+
+		$oResponse = new EA_Check_Procs_Response();
+
+		if (!$iNumProcs)
+		{
+			$oResponse->setState(EA_Check_Abstract_Response::STATE_CRITICAL);
+			$oResponse->setNumProcs(0);
+
+			return $oResponse;
+		}
+		elseif ($iNumProcs > $this->iProcsCriticalThreshold)
+		{
+			$oResponse->setState(EA_Check_Abstract_Response::STATE_CRITICAL);
+		}
+		elseif ($iNumProcs > $this->iProcsWarningThreshold)
+		{
+			$oResponse->setState(EA_Check_Abstract_Response::STATE_WARNING);
+		}
+		else
+		{
+			$oResponse->setState(EA_Check_Abstract_Response::STATE_OK);
+		}
+
+		$oResponse->setNumProcs($iNumProcs);
+
+		return $oResponse;
+	}
+
+	public function ready4Takeoff()
+	{
+		return true;
+	}
+
+	public function setLoadWarningThreshold($iProcsWarningThreshold)
+	{
+		$this->iProcsWarningThreshold = (int) $iProcsWarningThreshold;
+	}
+
+	public function setLoadCriticalThreshold($iProcsCriticalThreshold)
+	{
+		$this->iProcsCriticalThreshold = (int) $iProcsCriticalThreshold;
 	}
 }

@@ -47,13 +47,13 @@ class EA_Check_Load_Request extends EA_Check_Abstract_Request
 
 			return $oResponse;
 		}
-		elseif ($aLoad[0] > $this->fLoadWarningThreshold)
-		{
-			$oResponse->setState(EA_Check_Abstract_Response::STATE_WARNING);
-		}
 		elseif ($aLoad[0] > $this->fLoadCriticalThreshold)
 		{
 			$oResponse->setState(EA_Check_Abstract_Response::STATE_CRITICAL);
+		}
+		elseif ($aLoad[0] > $this->fLoadWarningThreshold)
+		{
+			$oResponse->setState(EA_Check_Abstract_Response::STATE_WARNING);
 		}
 		else
 		{
@@ -79,6 +79,6 @@ class EA_Check_Load_Request extends EA_Check_Abstract_Request
 
 	public function setLoadCriticalThreshold($fLoadCriticalThreshold)
 	{
-		$this>$fLoadCriticalThreshold = (float) $fLoadCriticalThreshold;
+		$this->fLoadCriticalThreshold = (float) $fLoadCriticalThreshold;
 	}
 }

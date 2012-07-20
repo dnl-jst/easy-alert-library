@@ -25,17 +25,17 @@
  * SUCH DAMAGE.
  */
 
-class EA_Check_Load_Graphs
+class EA_Check_Procs_Response extends EA_Check_Abstract_Response
 {
-	protected $aGraphs = array(
-		'load1' => array(
-			'title'    => 'Load average 1min',
-			'function' => 'getLoad1'
-		),
-	);
+	protected $iNumProcs;
 
-	public function getAvailableGraphs()
+	public function setNumProcs($iNumProcs)
 	{
-		return $this->aGraphs;
+		$this->iNumProcs = (int) $iNumProcs;
+	}
+
+	public function getNumProcs()
+	{
+		return $this->iNumProcs;
 	}
 }

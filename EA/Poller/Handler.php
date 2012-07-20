@@ -159,27 +159,40 @@ class EA_Poller_Handler
 		$this->triggerNotifications($aJob, $oResponse);
 	}
 
-	protected function triggerNotifications($aJob, $oResponse)
+	protected function getMessage($aJob, $oResponse)
 	{
 		$sLastState = $aJob['last_state'];
 		$sCurrentState = $oResponse->getState();
 
 		if ($sLastState === 'OK' && $sCurrentState !== 'OK')
 		{
-			$this->oLogger->info('service ' . $aJob['service_name'] . ' on host ' . $aJob['host_name'] . ' is ***' . $sCurrentState . '***');
+			return 'service ' . $aJob['service_name'] . ' on host ' . $aJob['host_name'] . ' is ***' . $sCurrentState . '***';
 		}
 		elseif ($sLastState !== 'OK' && $sCurrentState === 'OK')
 		{
-			$this->oLogger->info('service ' . $aJob['service_name'] . ' on host ' . $aJob['host_name'] . ' is ***OK*** again');
+			return 'service ' . $aJob['service_name'] . ' on host ' . $aJob['host_name'] . ' is ***OK*** again';
 		}
 		elseif ($sLastState !== $sCurrentState && $sCurrentState !== 'OK')
 		{
-			$this->oLogger->info('service ' . $aJob['service_name'] . ' on host ' . $aJob['host_name'] . ' changed to ***' . $sCurrentState . '***');
+			return 'service ' . $aJob['service_name'] . ' on host ' . $aJob['host_name'] . ' changed to ***' . $sCurrentState . '***';
 		}
 		elseif ($sLastState === $sCurrentState && $sCurrentState !== 'OK')
 		{
-			$this->oLogger->info('service ' . $aJob['service_name'] . ' on host ' . $aJob['host_name'] . ' is still ***' . $sCurrentState . '***');
+			return 'service ' . $aJob['service_name'] . ' on host ' . $aJob['host_name'] . ' is still ***' . $sCurrentState . '***';
 		}
+		else
+		{
+			return 'service ' . $aJob['service_name'] . ' on host ' . $aJob['host_name'] . ' is ***' . $sCurrentState . '***';
+		}
+	}
+
+	protected function triggerNotifications($aJob, $oResponse)
+	{
+		$sMessage = $this->getMessage($aJob, $oResponse);
+
+		$this->oLogger->info($sMessage);
+
+		$aContacts = $this->getContacts($aJob, $oResponse);
 	}
 
 	protected function getContacts($aJob, $oResponse)
@@ -201,7 +214,7 @@ class EA_Poller_Handler
 	protected function getJobsFromDb()
 	{
 		$oQuery = new EA_Poller_Queries_FetchJobs();
-		$oQuery->setInterval(1);
+		$oQuery->setInterval(5);
 
 		$oDb = EA_Db::getInstance();
 

@@ -25,13 +25,13 @@
  * SUCH DAMAGE.
  */
 
-class EA_Check_Load_Graphs
+class EA_Check_Procs_Graphs
 {
 	protected $aGraphs = array(
-		'load1' => array(
-			'title'    => 'Load average 1min',
-			'function' => 'getLoad1'
-		),
+		'procs' => array(
+			'title'    => 'Number of processes',
+			'function' => 'getNumProcs'
+		)
 	);
 
 	public function getAvailableGraphs()

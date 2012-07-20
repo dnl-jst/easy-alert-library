@@ -25,30 +25,32 @@
  * SUCH DAMAGE.
  */
 
-class EA_Check_Http_Request extends EA_Check_Abstract_Request
+class EA_Check_Tcp_Request extends EA_Check_Abstract_Request
 {
 	protected $sHost = '';
 	protected $iPort = 0;
-	protected $bSsl = null;
 	protected $fResponseTimeWarningThreshold = 1;
 	protected $fResponseTimeCriticalThreshold = 5;
 
 	public function doCheck()
 	{
-		$sUrl = $this->getUrl();
+		$this->oLogger->info('checking tcp against ' . $this->sHost . ':' . $this->iPort);
 
-		$this->oLogger->info('checking http against ' . $sUrl);
+		$iTimeout = $this->fResponseTimeCriticalThreshold + 1;
 
 		$iTimeBegin = microtime(true);
-		$sResponse = @file_get_contents($sUrl);
+
+		$errno = '';
+		$errstr = '';
+		$rSocket = @fsockopen($this->sHost, $this->iPort, $errno, $errstr, $iTimeout);
+
 		$iDuration = microtime(true) - $iTimeBegin;
 
-		$oResponse = new EA_Check_Http_Response();
+		$oResponse = new EA_Check_Tcp_Response();
 
-		if ($sResponse === false)
+		if ($rSocket === false)
 		{
 			$oResponse->setState(EA_Check_Abstract_Response::STATE_CRITICAL);
-			$oResponse->setBytes(0);
 			$oResponse->setResponseTime(0);
 
 			return $oResponse;
@@ -66,32 +68,24 @@ class EA_Check_Http_Request extends EA_Check_Abstract_Request
 			$oResponse->setState(EA_Check_Abstract_Response::STATE_OK);
 		}
 
-		$oResponse->setBytes(strlen($sResponse));
 		$oResponse->setResponseTime($iDuration);
+
+		if ($rSocket !== false)
+		{
+			@fclose($rSocket);
+		}
 
 		return $oResponse;
 	}
 
 	public function ready4Takeoff()
 	{
-		if (empty($this->sHost) || $this->iPort === 0 || $this->bSsl === null)
+		if (empty($this->sHost) || $this->iPort === 0)
 		{
 			return false;
 		}
 
 		return true;
-	}
-
-	protected function getUrl()
-	{
-		$sUrl = ($this->bSsl) ? 'https' : 'http';
-		$sUrl .= '://';
-		$sUrl .= $this->sHost;
-		$sUrl .= ':';
-		$sUrl .= $this->iPort;
-		$sUrl .= '/';
-
-		return $sUrl;
 	}
 
 	public function setHost($sHost)
@@ -102,10 +96,5 @@ class EA_Check_Http_Request extends EA_Check_Abstract_Request
 	public function setPort($iPort)
 	{
 		$this->iPort = (int) $iPort;
-	}
-
-	public function setSsl($bSsl)
-	{
-		$this->bSsl = (bool) $bSsl;
 	}
 }

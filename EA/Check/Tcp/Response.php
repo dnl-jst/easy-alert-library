@@ -25,17 +25,17 @@
  * SUCH DAMAGE.
  */
 
-class EA_Check_Load_Graphs
+class EA_Check_Tcp_Response extends EA_Check_Abstract_Response
 {
-	protected $aGraphs = array(
-		'load1' => array(
-			'title'    => 'Load average 1min',
-			'function' => 'getLoad1'
-		),
-	);
+	protected $fResponseTime;
 
-	public function getAvailableGraphs()
+	public function setResponseTime($fResponseTime)
 	{
-		return $this->aGraphs;
+		$this->fResponseTime = (float) $fResponseTime;
+	}
+
+	public function getResponseTime()
+	{
+		return $this->fResponseTime;
 	}
 }

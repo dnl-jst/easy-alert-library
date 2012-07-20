@@ -57,7 +57,8 @@ class EA_Poller_Queries_FetchJobs extends EA_Db_Query
 					OR DATE_ADD(hs.last_run, INTERVAL ' . (int) $this->iInterval . ' MINUTE) < NOW()
 					OR	hs.last_state <> \'OK\'
 				)
-			AND	h.disabled = 0';
+			AND	h.disabled = 0
+			AND	hs.disabled = 0';
 
 		return $sQuery;
 	}

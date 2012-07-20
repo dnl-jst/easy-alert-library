@@ -25,39 +25,35 @@
  * SUCH DAMAGE.
  */
 
-class EA_Check_Http_Request extends EA_Check_Abstract_Request
+class EA_Check_Disk_Request extends EA_Check_Abstract_Request
 {
-	protected $sHost = '';
-	protected $iPort = 0;
-	protected $bSsl = null;
-	protected $fResponseTimeWarningThreshold = 1;
-	protected $fResponseTimeCriticalThreshold = 5;
+	protected $sDiskPath = '';
+	protected $fDiskWarningThreshold = 20;
+	protected $fDiskCriticalThreshold = 10;
 
 	public function doCheck()
 	{
-		$sUrl = $this->getUrl();
+		$this->oLogger->info('checking free disk space');
 
-		$this->oLogger->info('checking http against ' . $sUrl);
+		$fTotalDiskSpace = disk_total_space($this->sDiskPath);
+		$fFreeDiskSpace = disk_free_space($this->sDiskPath);
 
-		$iTimeBegin = microtime(true);
-		$sResponse = @file_get_contents($sUrl);
-		$iDuration = microtime(true) - $iTimeBegin;
+		$fFreeDiskSpacePercentage = $fFreeDiskSpace / ($fTotalDiskSpace / 100);
 
-		$oResponse = new EA_Check_Http_Response();
+		$oResponse = new EA_Check_Disk_Response();
 
-		if ($sResponse === false)
+		if ($fTotalDiskSpace === false || $fFreeDiskSpace === false)
 		{
 			$oResponse->setState(EA_Check_Abstract_Response::STATE_CRITICAL);
-			$oResponse->setBytes(0);
-			$oResponse->setResponseTime(0);
+			$oResponse->setFreeDiskSpace(0);
 
 			return $oResponse;
 		}
-		elseif ($iDuration > $this->fResponseTimeCriticalThreshold)
+		elseif ($fFreeDiskSpacePercentage < $this->fDiskCriticalThreshold)
 		{
 			$oResponse->setState(EA_Check_Abstract_Response::STATE_CRITICAL);
 		}
-		elseif ($iDuration > $this->fResponseTimeWarningThreshold)
+		elseif ($fFreeDiskSpacePercentage < $this->fDiskWarningThreshold)
 		{
 			$oResponse->setState(EA_Check_Abstract_Response::STATE_WARNING);
 		}
@@ -66,15 +62,14 @@ class EA_Check_Http_Request extends EA_Check_Abstract_Request
 			$oResponse->setState(EA_Check_Abstract_Response::STATE_OK);
 		}
 
-		$oResponse->setBytes(strlen($sResponse));
-		$oResponse->setResponseTime($iDuration);
+		$oResponse->setFreeDiskSpace($fFreeDiskSpacePercentage);
 
 		return $oResponse;
 	}
 
 	public function ready4Takeoff()
 	{
-		if (empty($this->sHost) || $this->iPort === 0 || $this->bSsl === null)
+		if (empty($this->sDiskPath))
 		{
 			return false;
 		}
@@ -82,30 +77,13 @@ class EA_Check_Http_Request extends EA_Check_Abstract_Request
 		return true;
 	}
 
-	protected function getUrl()
+	public function setDiskWarningThreshold($fDiskWarningThreshold)
 	{
-		$sUrl = ($this->bSsl) ? 'https' : 'http';
-		$sUrl .= '://';
-		$sUrl .= $this->sHost;
-		$sUrl .= ':';
-		$sUrl .= $this->iPort;
-		$sUrl .= '/';
-
-		return $sUrl;
+		$this->fDiskWarningThreshold = (float) $fDiskWarningThreshold;
 	}
 
-	public function setHost($sHost)
+	public function setDiskCriticalThreshold($fDiskCriticalThreshold)
 	{
-		$this->sHost = (string) $sHost;
-	}
-
-	public function setPort($iPort)
-	{
-		$this->iPort = (int) $iPort;
-	}
-
-	public function setSsl($bSsl)
-	{
-		$this->bSsl = (bool) $bSsl;
+		$this->fDiskCriticalThreshold = (float) $fDiskCriticalThreshold;
 	}
 }

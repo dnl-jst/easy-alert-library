@@ -25,17 +25,17 @@
  * SUCH DAMAGE.
  */
 
-class EA_Check_Load_Graphs
+class EA_Check_Disk_Response extends EA_Check_Abstract_Response
 {
-	protected $aGraphs = array(
-		'load1' => array(
-			'title'    => 'Load average 1min',
-			'function' => 'getLoad1'
-		),
-	);
+	protected $fFreeDiskSpace;
 
-	public function getAvailableGraphs()
+	public function setFreeDiskSpace($fFreeDiskSpace)
 	{
-		return $this->aGraphs;
+		$this->fFreeDiskSpace = (float) $fFreeDiskSpace;
+	}
+
+	public function getFreeDiskSpace()
+	{
+		return $this->fFreeDiskSpace;
 	}
 }

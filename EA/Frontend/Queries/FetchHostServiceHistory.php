@@ -39,7 +39,8 @@ class EA_Frontend_Queries_FetchHostServiceHistory extends EA_Db_Query
 
 		$sQuery = '
 			SELECT
-				hsl.*
+				DATE_FORMAT(hsl.created, \'%Y-%m-%d %H:%i\') AS created,
+				hsl.response
 			FROM
 				ea_host_service_log hsl
 			JOIN ea_host_services hs ON hs.hs_id = hsl.hs_id

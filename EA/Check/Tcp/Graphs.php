@@ -25,13 +25,13 @@
  * SUCH DAMAGE.
  */
 
-class EA_Check_Load_Graphs
+class EA_Check_Tcp_Graphs
 {
 	protected $aGraphs = array(
-		'load1' => array(
-			'title'    => 'Load average 1min',
-			'function' => 'getLoad1'
-		),
+		'response_time' => array(
+			'title'    => 'Response time',
+			'function' => 'getResponseTime'
+		)
 	);
 
 	public function getAvailableGraphs()

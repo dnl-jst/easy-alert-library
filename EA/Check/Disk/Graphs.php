@@ -25,13 +25,13 @@
  * SUCH DAMAGE.
  */
 
-class EA_Check_Load_Graphs
+class EA_Check_Disk_Graphs
 {
 	protected $aGraphs = array(
-		'load1' => array(
-			'title'    => 'Load average 1min',
-			'function' => 'getLoad1'
-		),
+		'free_disk_space' => array(
+			'title'    => 'free disk space',
+			'function' => 'getFreeDiskSpace'
+		)
 	);
 
 	public function getAvailableGraphs()
