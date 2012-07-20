@@ -25,6 +25,8 @@
  * SUCH DAMAGE.
  */
 
+define('EA_LIBRARY_VERSION', '0.021');
+
 require_once('Exception.php');
 require_once('AutoLoader/PrefixNotAllowedException.php');
 require_once('AutoLoader/ClassNotFoundException.php');

@@ -57,7 +57,7 @@ class EA_Socket_Daemon
 
 		set_time_limit(0);
 
-		$this->oLogger->info('starting socket daemon');
+		$this->oLogger->info('starting socket daemon (backend ' . EA_BACKEND_VERSION . ', library ' . EA_LIBRARY_VERSION . ')');
 
 		$this->rSocket = socket_create(AF_INET, SOCK_STREAM, 0);
 
