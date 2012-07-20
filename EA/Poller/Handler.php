@@ -45,7 +45,15 @@ class EA_Poller_Handler
 			$this->oLogger->info('checking service ' . $aJob['service_name'] . ' on host ' . $aJob['host_name']);
 
 			$oRequest = $this->createRequest($aJob);
-			$oResponse = $this->doJob($aJob, $oRequest);
+
+			try
+			{
+				$oResponse = $this->doJob($aJob, $oRequest);
+			}
+			catch (EA_Socket_Client_UnableToConnectException $e)
+			{
+				$oResponse = new EA_Response();
+			}
 
 			$this->handleResponse($aJob, $oResponse);
 		}
