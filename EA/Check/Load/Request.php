@@ -28,7 +28,7 @@
 class EA_Check_Load_Request extends EA_Check_Abstract_Request
 {
 	protected $fLoadWarningThreshold = 1;
-	protected $fLoadCriticalThreshold = 5;
+	protected $fLoadCriticalThreshold = 2;
 
 	public function doCheck()
 	{
@@ -70,5 +70,15 @@ class EA_Check_Load_Request extends EA_Check_Abstract_Request
 	public function ready4Takeoff()
 	{
 		return true;
+	}
+
+	public function setLoadWarningThreshold($fLoadWarningThreshold)
+	{
+		$this->fLoadWarningThreshold = (float) $fLoadWarningThreshold;
+	}
+
+	public function setLoadCriticalThreshold($fLoadCriticalThreshold)
+	{
+		$this>$fLoadCriticalThreshold = (float) $fLoadCriticalThreshold;
 	}
 }
