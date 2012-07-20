@@ -29,6 +29,8 @@ class EA_Logger
 {
 	protected static $oInstance = null;
 
+	protected $sLogFile;
+
 	/*
 	 * @return EA_Logger
 	 */
@@ -44,21 +46,27 @@ class EA_Logger
 
 	private function __construct()
 	{
-		#
+		$oConfig = EA_Config::getInstance();
+		$this->sLogFile = $oConfig->getValue('log_file');
 	}
 
 	public function info($sMessage)
 	{
-		echo 'INFO - ' . $sMessage . chr(10);
+		$this->writeToLog('INFO - ' . $sMessage . chr(10));
 	}
 
 	public function debug($sMessage)
 	{
-		echo 'DEBUG - ' . $sMessage . chr(10);
+		$this->writeToLog('DEBUG - ' . $sMessage . chr(10));
 	}
 
 	public function error($sMessage)
 	{
-		echo 'ERROR - ' . $sMessage . chr(10);
+		$this->writeToLog('ERROR - ' . $sMessage . chr(10));
+	}
+
+	protected function writeToLog($sMessage)
+	{
+		file_put_contents($this->sLogFile, $sMessage, FILE_APPEND);
 	}
 }
