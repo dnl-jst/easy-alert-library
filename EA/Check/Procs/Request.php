@@ -27,6 +27,8 @@
 
 class EA_Check_Procs_Request extends EA_Check_Abstract_Request
 {
+	protected $sGetProcessNumberCommand = 'ps ax | wc -l';
+
 	protected $iProcsWarningThreshold = 50;
 	protected $iProcsCriticalThreshold = 100;
 
@@ -34,7 +36,7 @@ class EA_Check_Procs_Request extends EA_Check_Abstract_Request
 	{
 		$this->oLogger->info('checking total processes');
 
-		$iNumProcs = exec('ps ax | wc -l');
+		$iNumProcs = exec($this->sGetProcessNumberCommand);
 
 		$oResponse = new EA_Check_Procs_Response();
 
